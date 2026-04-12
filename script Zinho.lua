@@ -11,7 +11,7 @@ local Camera = Workspace.CurrentCamera
 -- // GUI PRINCIPAL
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MGCHEATS"
-ScreenGui.Parent = CoreGui
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 999999
