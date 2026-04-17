@@ -8,18 +8,22 @@ local Player = Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 local Camera = Workspace.CurrentCamera
 
--- ATUALIZA QUANDO MORRE / RESPAWNA
+-- ATUALIZA QUANDO MORRE
 Player.CharacterAdded:Connect(function(char)
     Character = char
 end)
 
--- CRIAR GUI
+-- ==============================================
+-- // CRIAR GUI
+-- ==============================================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MGCheats"
 ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.AlwaysOnTop
 
--- BOTÃO MG VERMELHO NEON
+-- ==============================================
+-- // BOTÃO MG VERMELHO NEON
+-- ==============================================
 local BtnMG = Instance.new("TextButton")
 BtnMG.Name = "BtnMG"
 BtnMG.Parent = ScreenGui
@@ -33,12 +37,15 @@ BtnMG.Font = Enum.Font.GothamBlack
 BtnMG.Text = "MG"
 BtnMG.TextColor3 = Color3.new(1, 0, 0)
 BtnMG.TextSize = 28
+BtnMG.AutoLocalize = false
 
 local UICornerBtn = Instance.new("UICorner")
 UICornerBtn.CornerRadius = UDim.new(1, 0)
 UICornerBtn.Parent = BtnMG
 
--- MENU PRINCIPAL
+-- ==============================================
+-- // MENU PRINCIPAL
+-- ==============================================
 local Menu = Instance.new("Frame")
 Menu.Name = "MenuPrincipal"
 Menu.Parent = ScreenGui
@@ -48,6 +55,7 @@ Menu.BorderColor3 = Color3.new(1, 0, 0)
 Menu.Size = UDim2.new(0, 300, 0, 400)
 Menu.Position = UDim2.new(0, 100, 0.5, -200)
 Menu.Visible = false
+Menu.AutoLocalize = false
 
 local UICornerMenu = Instance.new("UICorner")
 UICornerMenu.CornerRadius = UDim.new(0, 12)
@@ -62,8 +70,11 @@ Titulo.Font = Enum.Font.GothamBlack
 Titulo.Text = "✭ MG CHEATS ✭"
 Titulo.TextColor3 = Color3.new(1, 0, 0)
 Titulo.TextSize = 24
+Titulo.AutoLocalize = false
 
--- FUNÇÃO CRIAR BOTÃO
+-- ==============================================
+-- // FUNÇÃO CRIAR BOTÃO
+-- ==============================================
 local Y = 50
 local function AddButton(nome, func)
     local btn = Instance.new("TextButton")
@@ -77,6 +88,7 @@ local function AddButton(nome, func)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 14
     btn.Parent = Menu
+    btn.AutoLocalize = false
     
     local estado = false
     btn.MouseButton1Click:Connect(function()
@@ -89,7 +101,9 @@ local function AddButton(nome, func)
     return btn
 end
 
--- ESTADOS
+-- ==============================================
+-- // ESTADOS
+-- ==============================================
 local AIMBOT_ON = false
 local FARM_ON = false
 local PEGAR_ARMA_ON = false
@@ -97,70 +111,54 @@ local ESP_INOCENTE_ON = false
 local ESP_MURDER_ON = false
 local ESP_XERIFE_ON = false
 
--- DETECTAR FUNÇÃO
+-- ==============================================
+-- // DETECTAR FUNÇÃO
+-- ==============================================
 local function GetRole(plr)
     if not plr.Character then return "Inocente" end
-    
     local items = {}
-    
-    if plr.Backpack then
-        for _, v in pairs(plr.Backpack:GetChildren()) do
-            table.insert(items, v)
-        end
-    end
-    
-    if plr.Character then
-        for _, v in pairs(plr.Character:GetChildren()) do
-            table.insert(items, v)
-        end
-    end
-
+    if plr.Backpack then for _,v in pairs(plr.Backpack:GetChildren()) do table.insert(items, v) end end
+    if plr.Character then for _,v in pairs(plr.Character:GetChildren()) do table.insert(items, v) end end
     for _, v in pairs(items) do
-        if v.Name:lower():find("knife") or v.Name:lower():find("murder") then 
-            return "Murder" 
-        end
-        if v.Name:lower():find("gun") or v.Name:lower():find("revolver") or v.Name:lower():find("sheriff") then 
-            return "Sheriff" 
-        end
+        if v.Name:lower():find("knife") or v.Name:lower():find("murder") then return "Murder" end
+        if v.Name:lower():find("gun") or v.Name:lower():find("revolver") or v.Name:lower():find("sheriff") then return "Sheriff" end
     end
-
     return "Inocente"
 end
 
--- ESP BONECO (IGUAL DA FOTO)
+-- ==============================================
+-- // ESP BONECO LINHA (IGUAL DA FOTO)
+-- ==============================================
 local function CreateESP(plr, cor)
     if plr == Player or not plr.Character then return end
     
-    -- Remove ESP antigo se tiver
-    if plr.Character:FindFirstChild("MG_ESP_BONECO") then
-        plr.Character.MG_ESP_BONECO:Destroy()
+    -- Remove antigo
+    if plr.Character:FindFirstChild("MG_ESP") then
+        plr.Character.MG_ESP:Destroy()
     end
     
-    local espFolder = Instance.new("Model")
-    espFolder.Name = "MG_ESP_BONECO"
-    espFolder.Parent = plr.Character
+    local espModel = Instance.new("Model")
+    espModel.Name = "MG_ESP"
+    espModel.Parent = plr.Character
     
     for _, part in pairs(plr.Character:GetChildren()) do
-        if part:IsA("BasePart") and part.Name ~= "Head" then
-            local clone = part:Clone()
-            clone.BrickColor = BrickColor.new(cor)
-            clone.Material = Enum.Material.ForceField
-            clone.Transparency = 0.5
-            clone.CanCollide = false
-            clone.Anchored = false
-            clone.Parent = espFolder
-            
-            -- Liga a parte original com a clone
-            local weld = Instance.new("Weld")
-            weld.Part0 = part
-            weld.Part1 = clone
-            weld.C0 = CFrame.new()
-            weld.Parent = clone
+        if part:IsA("BasePart") then
+            local outline = Instance.new("BoxHandleAdornment")
+            outline.Name = "Outline"
+            outline.Adornee = part
+            outline.Size = part.Size
+            outline.Color3 = cor
+            outline.Transparency = 0.2
+            outline.ZIndex = 10
+            outline.AlwaysOnTop = true
+            outline.Parent = espModel
         end
     end
 end
 
--- ADICIONAR OPÇÕES
+-- ==============================================
+// ADICIONAR OPÇÕES
+-- ==============================================
 AddButton("AIMBOT MURDER", function(v) AIMBOT_ON = v end)
 AddButton("AUTO FARM", function(v) FARM_ON = v end)
 AddButton("PEGAR ARMA", function(v) PEGAR_ARMA_ON = v end)
@@ -178,8 +176,11 @@ Rodape.Font = Enum.Font.GothamBold
 Rodape.Text = "TikTok: @Phzonn_mg9"
 Rodape.TextColor3 = Color3.new(1, 0, 0)
 Rodape.TextSize = 14
+Rodape.AutoLocalize = false
 
--- ARRASTAR
+-- ==============================================
+-- // ARRASTAR (FUNCIONANDO 100%)
+-- ==============================================
 local function EnableDrag(obj)
     local dragging = false
     local startPos, startMouse = nil, nil
@@ -190,8 +191,8 @@ local function EnableDrag(obj)
         startPos = obj.Position
     end)
 
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+    UserInputService.InputChanged:Connect(function()
+        if dragging then
             local delta = UserInputService:GetMouseLocation() - startMouse
             obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
@@ -207,47 +208,46 @@ end
 EnableDrag(Menu)
 EnableDrag(BtnMG)
 
--- ABRIR / FECHAR MENU (GARANTIDO)
+-- ==============================================
+-- // ABRIR / FECHAR MENU (GARANTIDO)
+-- ==============================================
 BtnMG.MouseButton1Click:Connect(function()
     Menu.Visible = not Menu.Visible
 end)
 
--- LOOPS
+-- ==============================================
+-- // LOOPS
+-- ==============================================
 RunService.RenderStepped:Connect(function()
-    -- ESP BONECO
+    -- ESP
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= Player and plr.Character then
             local role = GetRole(plr)
             
             if role == "Murder" and ESP_MURDER_ON then
-                CreateESP(plr, "Bright red")
+                CreateESP(plr, Color3.new(1,0,0))
             elseif role == "Sheriff" and ESP_XERIFE_ON then
-                CreateESP(plr, "Bright blue")
+                CreateESP(plr, Color3.new(0,0,1))
             elseif role == "Inocente" and ESP_INOCENTE_ON then
-                CreateESP(plr, "Bright green")
-            elseif plr.Character:FindFirstChild("MG_ESP_BONECO") then
-                plr.Character.MG_ESP_BONECO:Destroy()
+                CreateESP(plr, Color3.new(0,1,0))
+            elseif plr.Character:FindFirstChild("MG_ESP") then
+                plr.Character.MG_ESP:Destroy()
             end
         end
     end
     
     -- AIMBOT
-    if AIMBOT_ON then
+    if AIMBOT_ON and Character and Character:FindFirstChild("HumanoidRootPart") then
         local target = nil
         local dist = math.huge
-        
         for _, plr in pairs(Players:GetPlayers()) do
             if plr ~= Player and plr.Character and plr.Character:FindFirstChild("Head") then
                 if GetRole(plr) == "Murder" then
                     local mag = (Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                    if mag < dist then
-                        dist = mag
-                        target = plr
-                    end
+                    if mag < dist then dist = mag target = plr end
                 end
             end
         end
-        
         if target and target.Character.Head then
             Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.Head.Position)
         end
@@ -258,16 +258,13 @@ end)
 RunService.Heartbeat:Connect(function()
     if FARM_ON and Character and Character:FindFirstChild("HumanoidRootPart") then
         local hrp = Character.HumanoidRootPart
-        
         for _, v in pairs(Workspace:GetChildren()) do
-            if v:IsA("BasePart") then
-                if v.Name:lower():find("coin") or v.Name:lower():find("box") then
-                    if (hrp.Position - v.Position).Magnitude < 15 then
-                        local oldPos = hrp.CFrame
-                        hrp.CFrame = CFrame.new(v.Position + Vector3.new(0,1,0))
-                        task.wait(0.1)
-                        hrp.CFrame = oldPos
-                    end
+            if v:IsA("BasePart") and (v.Name:lower():find("coin") or v.Name:lower():find("box")) then
+                if (hrp.Position - v.Position).Magnitude < 15 then
+                    local old = hrp.CFrame
+                    hrp.CFrame = CFrame.new(v.Position + Vector3.new(0,1,0))
+                    task.wait(0.1)
+                    hrp.CFrame = old
                 end
             end
         end
@@ -295,4 +292,4 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
-print("✅ MG CHEATS - MENU ABRE E ESP BONECO")
+print("✅ MG CHEATS - VERSÃO FINAL LINHA COLORIDA")
