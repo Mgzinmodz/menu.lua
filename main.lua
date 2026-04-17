@@ -127,21 +127,37 @@ local function GetRole(plr)
     return "Inocente"
 end
 
--- ESP
-local function ApplyESP(plr, cor)
+-- ESP BONECO (IGUAL DA FOTO)
+local function CreateESP(plr, cor)
     if plr == Player or not plr.Character then return end
     
-    local hl = plr.Character:FindFirstChild("MG_ESP")
-    if not hl then
-        hl = Instance.new("Highlight")
-        hl.Name = "MG_ESP"
-        hl.Parent = plr.Character
-        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    -- Remove ESP antigo se tiver
+    if plr.Character:FindFirstChild("MG_ESP_BONECO") then
+        plr.Character.MG_ESP_BONECO:Destroy()
     end
     
-    hl.FillColor = cor
-    hl.OutlineColor = cor
-    hl.Enabled = true
+    local espFolder = Instance.new("Model")
+    espFolder.Name = "MG_ESP_BONECO"
+    espFolder.Parent = plr.Character
+    
+    for _, part in pairs(plr.Character:GetChildren()) do
+        if part:IsA("BasePart") and part.Name ~= "Head" then
+            local clone = part:Clone()
+            clone.BrickColor = BrickColor.new(cor)
+            clone.Material = Enum.Material.ForceField
+            clone.Transparency = 0.5
+            clone.CanCollide = false
+            clone.Anchored = false
+            clone.Parent = espFolder
+            
+            -- Liga a parte original com a clone
+            local weld = Instance.new("Weld")
+            weld.Part0 = part
+            weld.Part1 = clone
+            weld.C0 = CFrame.new()
+            weld.Parent = clone
+        end
+    end
 end
 
 -- ADICIONAR OPÇÕES
@@ -191,25 +207,26 @@ end
 EnableDrag(Menu)
 EnableDrag(BtnMG)
 
+-- ABRIR / FECHAR MENU (GARANTIDO)
 BtnMG.MouseButton1Click:Connect(function()
     Menu.Visible = not Menu.Visible
 end)
 
 -- LOOPS
 RunService.RenderStepped:Connect(function()
-    -- ESP
+    -- ESP BONECO
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= Player and plr.Character then
             local role = GetRole(plr)
             
             if role == "Murder" and ESP_MURDER_ON then
-                ApplyESP(plr, Color3.new(1,0,0))
+                CreateESP(plr, "Bright red")
             elseif role == "Sheriff" and ESP_XERIFE_ON then
-                ApplyESP(plr, Color3.new(0,0.5,1))
+                CreateESP(plr, "Bright blue")
             elseif role == "Inocente" and ESP_INOCENTE_ON then
-                ApplyESP(plr, Color3.new(0,1,0))
-            elseif plr.Character:FindFirstChild("MG_ESP") then
-                plr.Character.MG_ESP:Destroy()
+                CreateESP(plr, "Bright green")
+            elseif plr.Character:FindFirstChild("MG_ESP_BONECO") then
+                plr.Character.MG_ESP_BONECO:Destroy()
             end
         end
     end
@@ -237,7 +254,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- AUTO FARM (OTIMIZADO)
+-- AUTO FARM
 RunService.Heartbeat:Connect(function()
     if FARM_ON and Character and Character:FindFirstChild("HumanoidRootPart") then
         local hrp = Character.HumanoidRootPart
@@ -278,4 +295,4 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
-print("✅ MG CHEATS - VERSÃO FINAL CORRIGIDA")
+print("✅ MG CHEATS - MENU ABRE E ESP BONECO")
